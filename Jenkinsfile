@@ -50,8 +50,10 @@ node('master') {
 }
 
 def createHelmChart(Map stepParams) {
-    def map = ['replicaCount': ${stepParams.replicaCount},
-               'containerPort': ${stepParams.containerPort},
+    
+    
+    def map = ['replicaCount': stepParams.replicaCount,
+               'containerPort': ${ stepParams.containerPort },
                'nameOverride': false,
                'fullnameOverride': '${stepParams.application_name}',
                'labels': ' ${stepParams.labels}',
