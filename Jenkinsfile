@@ -7,6 +7,14 @@ node('master') {
         application_name: "${config.application_name}",
         helmChartDir: "${config.helm_chart_dir}",
         helmChartVersion: "${config.helm_chart_version}"
+        image_registry: "${config.image_registry}"
+        image_version: "${config.image_version}"
+        labels: "${config.labels}"
+        selectorLabels: "${config.selectorLabels}"
+        imagePullSecrets: "${config.imagePullSecrets}"
+        containerPort: "${config.containerPort}"
+        replicaCount: "${config.replicaCount}"
+
     )
      dryRun(
         application_name: "${config.application_name}",
@@ -42,14 +50,14 @@ node('master') {
 }
 
 def createHelmChart(Map stepParams) {
-    def map = ['replicaCount': 1,
-               'containerPort': 20200,
+    def map = ['replicaCount': ${stepParams.replicaCount},
+               'containerPort': ${stepParams.containerPort},
                'nameOverride': false,
-               'fullnameOverride': 'billing-ms',
-               'labels': 'opaEnablement: disabled',
-               'selectorLabels':'opaEnablement: disabled']
-        map.image = ['repository': 'artifactory.carefirst.com/fepbridge-docker-test-local/persons-ms', 'tag': '12243']
-        map.imagePullSecrets = [['name': 'artifactcred']]
+               'fullnameOverride': '${stepParams.application_name}',
+               'labels': ' ${stepParams.labels}',
+               'selectorLabels':' ${stepParams.selectorLabels}']
+        map.image = ['repository': '${stepParams.image_registry}', 'tag': '${stepParams.image_version}']
+        map.imagePullSecrets = [['name': '${stepParams.imagePullSecrets}']]
 
     try {
         stage('Creating helm chart for application') {
