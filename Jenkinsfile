@@ -2,7 +2,6 @@ node('master') {
     stage('Checking out codebase') {
         checkout scm
         config = readProperties file: 'Configuration.properties'
-        
     }
     createHelmChart(
         application_name: "${config.application_name}",
@@ -43,16 +42,19 @@ node('master') {
 }
 
 def createHelmChart(Map stepParams) {
-    def map = ['something': 'my datas',
-                    'size': 3,
-                    'isEmpty': false]
-        map.put('name', 'myserver')
-        
+    def map = ['replicaCount': 1,
+               'containerPort': 20200,
+               'nameOverride': false,
+               'fullnameOverride': 'billing-ms',
+               'labels': 'opaEnablement: disabled',
+               'selectorLabels':'opaEnablement: disabled']
+        map.image = [['repository': 'artifactory.carefirst.com/fepbridge-docker-test-local/persons-ms', 'tag': '12243']]
+
     try {
         stage('Creating helm chart for application') {
             sh "/usr/local/bin/helm create ${stepParams.application_name}"
             dir("${stepParams.application_name}") {
-                sh "find . -type f ! -name deployment.yaml ! -name  values.yaml ! -name _helpers.tpl ! -name  Chart.yaml ! -name .helmignore -delete"
+                sh 'find . -type f ! -name deployment.yaml ! -name  values.yaml ! -name _helpers.tpl ! -name  Chart.yaml ! -name .helmignore -delete'
                 sh "sed -i '8d;10d;27,29d;32,33d;40,61d' templates/deployment.yaml"
                 //                sh "sed -i '27i\\s \\s \\s \\s \\s \\s \\s \\s \\s \\s \\senv:\\n          - name:  SPRING_PROFILES_ACTIVE\\n            value:  deva' templates/deployment.yaml"
                 sh "sed -i 's/80/{{ .Values.containerPort }}/g'  templates/deployment.yaml"
@@ -72,7 +74,7 @@ def dryRun(Map stepParams) {
         stage('Dry run helm chart for application') {
             sh "/usr/local/bin/helm create ${stepParams.application_name}"
             dir("${stepParams.application_name}") {
-                sh "find . -type f ! -name deployment.yaml ! -name  values.yaml ! -name _helpers.tpl ! -name  Chart.yaml ! -name .helmignore -delete"
+                sh 'find . -type f ! -name deployment.yaml ! -name  values.yaml ! -name _helpers.tpl ! -name  Chart.yaml ! -name .helmignore -delete'
                 sh "sed -i '8d;10d;27,29d;32,33d;40,61d' templates/deployment.yaml"
                 //                sh "sed -i '27i\\s \\s \\s \\s \\s \\s \\s \\s \\s \\s \\senv:\\n          - name:  SPRING_PROFILES_ACTIVE\\n            value:  deva' templates/deployment.yaml"
                 sh "sed -i 's/80/{{ .Values.containerPort }}/g'  templates/deployment.yaml"
@@ -85,7 +87,6 @@ def dryRun(Map stepParams) {
         throw e
     }
 }
-
 
 def packageHelmChart(Map stepParams) {
     try {
