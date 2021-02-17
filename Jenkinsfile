@@ -55,9 +55,9 @@ def createHelmChart(Map stepParams) {
     def map  = ['replicaCount': stepParams.replicaCount,
                'containerPort': stepParams.containerPort ,
                'nameOverride': false,
-               'fullnameOverride': stepParams.application_name',
+               'fullnameOverride': stepParams.application_name,
                'labels': stepParams.labels,
-               'selectorLabels':' stepParams.selectorLabels]
+               'selectorLabels': stepParams.selectorLabels]
         map.image = ['repository': stepParams.image_registry, 'tag': stepParams.image_version]
         map.imagePullSecrets = [['name': stepParams.imagePullSecrets]]
 
