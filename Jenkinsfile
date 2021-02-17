@@ -48,7 +48,7 @@ def createHelmChart(Map stepParams) {
                'fullnameOverride': 'billing-ms',
                'labels': 'opaEnablement: disabled',
                'selectorLabels':'opaEnablement: disabled']
-        map.image = [['repository': '\"artifactory.carefirst.com/fepbridge-docker-test-local/persons-ms\"', 'tag': '12243']]
+        map.image = [['repository': 'nginx', 'tag': '12243']]
         map.imagePullSecrets = [['name': 'artifactcred']]
 
     try {
