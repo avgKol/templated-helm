@@ -48,7 +48,7 @@ def createHelmChart(Map stepParams) {
                'fullnameOverride': 'billing-ms',
                'labels': 'opaEnablement: disabled',
                'selectorLabels':'opaEnablement: disabled']
-        map.image = [['repository': 'artifactory.carefirst.com/fepbridge-docker-test-local/persons-ms', 'tag': '12243']]
+        map.image = [['repository': "'artifactory.carefirst.com/fepbridge-docker-test-local/persons-ms"', 'tag': '12243']]
         map.imagePullSecrets = [['name': 'artifactcred']]
 
     try {
@@ -74,7 +74,7 @@ def dryRun(Map stepParams) {
     try {
         stage('Dry run helm chart for application') {
             dir("${stepParams.application_name}") {
-                 sh "/usr/local/bin/helm install  ${stepParams.application_name} . --values values-shorter.yaml --namespace helm-dev   --dry-run"
+                 sh "/usr/local/bin/helm install  ${stepParams.application_name} . --values values-shorter.yaml --namespace helm-dev   --dry-run --debug"
                 input 'Proceed?'
             }
         }
