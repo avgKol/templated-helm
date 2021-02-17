@@ -43,7 +43,7 @@ def createHelmChart(Map stepParams) {
             dir("${stepParams.application_name}") {
                 sh "find . -type f ! -name deployment.yaml ! -name  values.yaml ! -name _helpers.tpl ! -name  Chart.yaml ! -name .helmignore -delete"
                 sh "sed -i '8d;10d;27,29d;32,33d;40,61d' templates/deployment.yaml"
-                sh "sed -i '27i\s \s \s \s \s \s \s \s \s \s \senv:\\n          - name:  SPRING_PROFILES_ACTIVE\\n            value:  deva' templates/deployment.yaml"
+                sh "sed -i '27i\\s \\s \\s \\s \\s \\s \\s \\s \\s \\s \\senv:\\n          - name:  SPRING_PROFILES_ACTIVE\\n            value:  deva' templates/deployment.yaml"
                 sh "sed -i 's/80/{{ .Values.containerPort }}/g'  templates/deployment.yaml"
                 input 'Proceed?'
             }
