@@ -39,7 +39,7 @@ node('master') {
 def createHelmChart(Map stepParams) {
     try {
         stage('Creating helm chart for application') {
-            sh "usr/local/bin/helm create ${stepParams.application_name}"
+            sh "/usr/local/bin/helm create ${stepParams.application_name}"
             dir("${stepParams.application_name}") {
                 sh "find . -type f ! -name deployment.yaml ! -name  values.yaml ! -name _helpers.tpl ! -name  Chart.yaml ! -name .helmignore -delete"
                 sh "sed -i '8d;10d;27,29d;32,33d;40,61d' templates/deployment.yaml"
