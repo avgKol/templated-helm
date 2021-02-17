@@ -49,6 +49,7 @@ def createHelmChart(Map stepParams) {
                'labels': 'opaEnablement: disabled',
                'selectorLabels':'opaEnablement: disabled']
         map.image = [['repository': 'artifactory.carefirst.com/fepbridge-docker-test-local/persons-ms', 'tag': '12243']]
+        map.imagePullSecrets = [['name': 'artifactcred']]
 
     try {
         stage('Creating helm chart for application') {
