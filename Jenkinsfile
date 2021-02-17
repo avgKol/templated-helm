@@ -52,7 +52,7 @@ node('master') {
 def createHelmChart(Map stepParams) {
     
     
-    def   = ['replicaCount': stepParams.replicaCount,
+    def map  = ['replicaCount': stepParams.replicaCount,
                'containerPort': stepParams.containerPort ,
                'nameOverride': false,
                'fullnameOverride': stepParams.application_name',
