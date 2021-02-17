@@ -74,7 +74,7 @@ def dryRun(Map stepParams) {
     try {
         stage('Dry run helm chart for application') {
             dir("${stepParams.application_name}") {
-                 sh "helm install  ${stepParams.application_name} . --values values-shorter.yaml --namespace helm-dev   --dry-run"
+                 sh "/usr/bin/helm install  ${stepParams.application_name} . --values values-shorter.yaml --namespace helm-dev   --dry-run"
                 input 'Proceed?'
             }
         }
