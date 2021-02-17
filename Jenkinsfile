@@ -6,13 +6,13 @@ node('master') {
     createHelmChart(
         application_name: "${config.application_name}",
         helmChartDir: "${config.helm_chart_dir}",
-        helmChartVersion: "${config.helm_chart_version}"
-        image_registry: "${config.image_registry}"
-        image_version: "${config.image_version}"
-        labels: "${config.labels}"
-        selectorLabels: "${config.selectorLabels}"
-        imagePullSecrets: "${config.imagePullSecrets}"
-        containerPort: "${config.containerPort}"
+        helmChartVersion: "${config.helm_chart_version}",
+        image_registry: "${config.image_registry}",
+        image_version: "${config.image_version}",
+        labels: "${config.labels}",
+        selectorLabels: "${config.selectorLabels}",
+        imagePullSecrets: "${config.imagePullSecrets}",
+        containerPort: "${config.containerPort}",
         replicaCount: "${config.replicaCount}"
 
     )
