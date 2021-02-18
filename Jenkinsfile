@@ -50,8 +50,7 @@ node('master') {
 }
 
 def createHelmChart(Map stepParams) {
-    
-    
+
     def map  = ['replicaCount': stepParams.replicaCount,
                'containerPort': stepParams.containerPort ,
                'nameOverride': false,
@@ -69,7 +68,8 @@ def createHelmChart(Map stepParams) {
                 sh "sed -i '8d;10d;27,29d;32,33d;40,61d' templates/deployment.yaml"
                 //                sh "sed -i '27i\\s \\s \\s \\s \\s \\s \\s \\s \\s \\s \\senv:\\n          - name:  SPRING_PROFILES_ACTIVE\\n            value:  deva' templates/deployment.yaml"
                 sh "sed -i 's/80/{{ .Values.containerPort }}/g'  templates/deployment.yaml"
-                writeYaml file: 'values-shorter.yaml', data: map
+                sh "rm values.yaml"
+                writeYaml file: 'values.yaml', data: map
                 input 'Proceed?'
             }
         }
@@ -84,7 +84,7 @@ def dryRun(Map stepParams) {
     try {
         stage('Dry run helm chart for application') {
             dir("${stepParams.application_name}") {
-                 sh "/usr/local/bin/helm install  ${stepParams.application_name} . --values values-shorter.yaml --namespace helm-dev   --dry-run --debug"
+                 sh "/usr/local/bin/helm install  ${stepParams.application_name} . --values values.yaml --namespace helm-dev   --dry-run --debug"
                 input 'Proceed?'
             }
         }
@@ -128,7 +128,7 @@ def applyHelmChartDev(Map stepParams) {
         stage('Deploying the Helm Chart to DEV') {
             dir("${stepParams.helmChartDir}") {
                 input 'Deploy to DEV?'
-                sh "/usr/local/bin/helm upgrade ${stepParams.applicationName} ./ -f values-dev.yaml --namespace helm-dev --install"
+                sh "/usr/local/bin/helm upgrade ${stepParams.applicationName} ./ -f values.yaml --namespace helm-dev --install"
             }
         }
     } catch (Exception e) {
@@ -143,7 +143,7 @@ def applyHelmChartQa(Map stepParams) {
         stage('Deploying the Helm Chart to QA') {
             dir("${stepParams.helmChartDir}") {
                 input 'Deploy to QA?'
-                sh "/usr/local/bin/helm upgrade ${stepParams.applicationName} ./ -f values-dev.yaml --namespace helm-qa --install"
+                sh "/usr/local/bin/helm upgrade ${stepParams.applicationName} ./ -f values.yaml --namespace helm-qa --install"
             }
         }
     } catch (Exception e) {
@@ -158,7 +158,7 @@ def applyHelmChartProd(Map stepParams) {
         stage('Deploying the Helm Chart to PROD') {
             dir("${stepParams.helmChartDir}") {
                 input 'Deploy to PROD?'
-                sh "/usr/local/bin/helm upgrade ${stepParams.applicationName} ./ -f values-dev.yaml --namespace helm-prod --install"
+                sh "/usr/local/bin/helm upgrade ${stepParams.applicationName} ./ -f values.yaml --namespace helm-prod --install"
             }
         }
     } catch (Exception e) {
