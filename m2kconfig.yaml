@@ -1,0 +1,9 @@
+move2kube:
+  sources:
+    types:
+      - Kubernetes
+  target:
+    artifacttype: Helm
+    clustertype: Kubernetes
+    imageregistry:
+      logintype: No authentication

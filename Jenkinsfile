@@ -62,14 +62,16 @@ def createHelmChart(Map stepParams) {
 
     try {
         stage('Creating helm chart for application') {
-            sh "/usr/local/bin/helm create ${stepParams.application_name}"
-            dir("${stepParams.application_name}") {
-                sh 'find . -type f ! -name deployment.yaml ! -name  values.yaml ! -name _helpers.tpl ! -name  Chart.yaml ! -name .helmignore -delete'
-                sh "sed -i '8d;10d;27,29d;32,33d;40,61d' templates/deployment.yaml"
-                //                sh "sed -i '27i\\s \\s \\s \\s \\s \\s \\s \\s \\s \\s \\senv:\\n          - name:  SPRING_PROFILES_ACTIVE\\n            value:  deva' templates/deployment.yaml"
-                sh "sed -i 's/80/{{ .Values.containerPort }}/g'  templates/deployment.yaml"
-                sh "rm values.yaml"
-                writeYaml file: 'values.yaml', data: map
+            // sh "/usr/local/bin/helm create ${stepParams.application_name}"
+            // dir("${stepParams.application_name}") {
+            //     sh 'find . -type f ! -name deployment.yaml ! -name  values.yaml ! -name _helpers.tpl ! -name  Chart.yaml ! -name .helmignore -delete'
+            //     sh "sed -i '8d;10d;27,29d;32,33d;40,61d' templates/deployment.yaml"
+            //     //                sh "sed -i '27i\\s \\s \\s \\s \\s \\s \\s \\s \\s \\s \\senv:\\n          - name:  SPRING_PROFILES_ACTIVE\\n            value:  deva' templates/deployment.yaml"
+            //     sh "sed -i 's/80/{{ .Values.containerPort }}/g'  templates/deployment.yaml"
+            //     sh "rm values.yaml"
+            //     writeYaml file: 'values.yaml', data: map
+
+            sh "/usr/local/bin/move2kube  translate  m2kconfig.yaml  --config m2kconfig.yaml   --source  yamls --overwrite --verbose   --qaskip --name ${stepParams.application_name}"
                 input 'Proceed?'
             }
         }
@@ -84,7 +86,7 @@ def dryRun(Map stepParams) {
     try {
         stage('Dry run helm chart for application') {
             dir("${stepParams.application_name}") {
-                 sh "/usr/local/bin/helm install  ${stepParams.application_name} . --values values.yaml --namespace helm-dev   --dry-run --debug"
+                 sh "/usr/local/bin/helm upgrade --install  ${stepParams.application_name} ${stepParams.application_name} --namespace helm-dev   --dry-run --debug"
                 input 'Proceed?'
             }
         }
