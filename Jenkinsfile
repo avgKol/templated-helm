@@ -32,7 +32,7 @@ node('master') {
     )
     applyHelmChartDev(
         helmChartDir: "${config.helm_chart_dir}",
-        applicationName: "${config.application_name}"
+        application_name: "${config.application_name}"
     )
     applyHelmChartQa(
         helmChartDir: "${config.helm_chart_dir}",
