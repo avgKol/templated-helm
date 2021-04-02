@@ -16,7 +16,7 @@ node('master') {
         replicaCount: "${config.replicaCount}"
 
     )
-     dryRun(
+    dryRun(
         application_name: "${config.application_name}",
         helmChartDir: "${config.helm_chart_dir}",
         helmChartVersion: "${config.helm_chart_version}"
@@ -50,15 +50,14 @@ node('master') {
 }
 
 def createHelmChart(Map stepParams) {
-
     def map  = ['replicaCount': stepParams.replicaCount,
                'containerPort': stepParams.containerPort ,
                'nameOverride': false,
                'fullnameOverride': stepParams.application_name,
                'labels': stepParams.labels,
                'selectorLabels': stepParams.selectorLabels]
-        map.image = ['repository': stepParams.image_registry, 'tag': stepParams.image_version]
-        map.imagePullSecrets = [['name': stepParams.imagePullSecrets]]
+    map.image = ['repository': stepParams.image_registry, 'tag': stepParams.image_version]
+    map.imagePullSecrets = [['name': stepParams.imagePullSecrets]]
 
     try {
         stage('Creating helm chart for application') {
@@ -73,7 +72,7 @@ def createHelmChart(Map stepParams) {
 
             sh "/usr/local/bin/move2kube  translate  m2kconfig.yaml  --config m2kconfig.yaml   --source  yamls --overwrite --verbose   --qaskip --name ${stepParams.application_name}"
                 input 'Proceed?'
-         //   }
+        //   }
         }
     } catch (Exception e) {
         echo 'There is an error while creating helm chart. Please check the logs!!!!'
@@ -86,7 +85,7 @@ def dryRun(Map stepParams) {
     try {
         stage('Dry run helm chart for application') {
             dir("${stepParams.application_name}") {
-                 sh "/usr/local/bin/helm upgrade --install  ${stepParams.application_name} ${stepParams.application_name} --namespace helm-dev   --dry-run --debug"
+                sh "/usr/local/bin/helm upgrade --install  ${stepParams.application_name} ${stepParams.application_name} --namespace helm-dev   --dry-run --debug"
                 input 'Proceed?'
             }
         }
@@ -98,39 +97,39 @@ def dryRun(Map stepParams) {
 }
 
 def packageHelmChart(Map stepParams) {
-    try {
-        stage('Packaging helm chart for application') {
-            dir("${stepParams.helmChartDir}") {
-                sh "/usr/local/bin/helm package ./ --version ${stepParams.helmChartVersion}"
-            }
-        }
-    } catch (Exception e) {
-        echo 'There is an error while packaging helm chart. Please check the logs!!!!'
-        echo e.toString()
-        throw e
-    }
+// try {
+//     stage('Packaging helm chart for application') {
+//         dir("${stepParams.helmChartDir}") {
+//             sh "/usr/local/bin/helm package ./ --version ${stepParams.helmChartVersion}"
+//         }
+//     }
+// } catch (Exception e) {
+//     echo 'There is an error while packaging helm chart. Please check the logs!!!!'
+//     echo e.toString()
+//     throw e
+// }
 }
 
 def storeHelmChart(Map stepParams) {
-    try {
-        stage('Storing the Helm chart') {
-            dir("${stepParams.helmChartDir}") {
-                sh "curl -uadmin:APAP3ArKZtCBVsPARwg4nZmiTng -T   ${stepParams.applicationName}-${stepParams.helmChartVersion}.tgz \"http://127.0.0.1:8081/artifactory/helm-local-artifactory/\""
-            }
-        }
-    } catch (Exception e) {
-        echo 'There is an error while setting up application. Please check the logs!!!!'
-        echo e.toString()
-        throw e
-    }
+// try {
+//     stage('Storing the Helm chart') {
+//         dir("${stepParams.helmChartDir}") {
+//             sh "curl -uadmin:APAP3ArKZtCBVsPARwg4nZmiTng -T   ${stepParams.applicationName}-${stepParams.helmChartVersion}.tgz \"http://127.0.0.1:8081/artifactory/helm-local-artifactory/\""
+//         }
+//     }
+// } catch (Exception e) {
+//     echo 'There is an error while setting up application. Please check the logs!!!!'
+//     echo e.toString()
+//     throw e
+// }
 }
 
 def applyHelmChartDev(Map stepParams) {
     try {
         stage('Deploying the Helm Chart to DEV') {
-            dir("${stepParams.helmChartDir}") {
+            dir("${stepParams.application_name}") {
                 input 'Deploy to DEV?'
-                sh "/usr/local/bin/helm upgrade ${stepParams.applicationName} ./ -f values.yaml --namespace helm-dev --install"
+                sh "/usr/local/bin/helm upgrade --install  ${stepParams.application_name} ${stepParams.application_name} --namespace helm-dev  --create-namespace  --debug"
             }
         }
     } catch (Exception e) {
