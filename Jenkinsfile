@@ -127,8 +127,8 @@ def storeHelmChart(Map stepParams) {
 def applyHelmChartDev(Map stepParams) {
     try {
         stage('Deploying the Helm Chart to DEV') {
+            input 'Deploy to DEV?'
             dir("${stepParams.application_name}") {
-                input 'Deploy to DEV?'
                 sh "/usr/local/bin/helm upgrade --install  ${stepParams.application_name} ${stepParams.application_name} --namespace helm-dev  --create-namespace  --debug"
             }
         }
