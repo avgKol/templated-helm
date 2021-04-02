@@ -73,7 +73,7 @@ def createHelmChart(Map stepParams) {
 
             sh "/usr/local/bin/move2kube  translate  m2kconfig.yaml  --config m2kconfig.yaml   --source  yamls --overwrite --verbose   --qaskip --name ${stepParams.application_name}"
                 input 'Proceed?'
-            }
+         //   }
         }
     } catch (Exception e) {
         echo 'There is an error while creating helm chart. Please check the logs!!!!'
